@@ -77,11 +77,15 @@ summarize(stepsperday,
 by_interval <- group_by(dt, interval)
 stepsperinterval_mean <- summarize(by_interval, mean_steps_per_interval=mean(steps, na.rm=TRUE))
 
+png(file = "plot1.png", width = 480, height = 480)
+
 ggplot(stepsperinterval_mean, aes(x=interval, y=mean_steps_per_interval))+
     geom_line()+
     xlab("Interval")+
     ylab("Total steps")+
     ggtitle("Mean steps per interval")
+
+dev.off()
 
 ```
 
