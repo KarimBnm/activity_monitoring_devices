@@ -2,7 +2,9 @@
 title: "Activity Monotoring Devices"
 author: "Karim.bnm"
 date: "3 février 2016"
-output: html_document
+output: 
+  html_document: 
+    fig_caption: yes
 ---
 ## Loading and preprocessing the data
 
@@ -19,7 +21,7 @@ library(lattice)
 
 ```
 
-```{r}
+```{r, echo=TRUE}
 
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(url, "datafile.zip")
@@ -39,17 +41,20 @@ dt$date <- as.Date(dt$date)
 
 ## What is mean total number of steps taken per day?
 
+First, the data are grouped by date and then summarized according to the sum of steps per day.
+
 ```{r, echo=TRUE}
 
 by_day <- group_by(dt, date)
 stepsperday <- summarize(by_day, total_steps_per_day=sum(steps, na.rm = TRUE))
-head(stepsperday)
 
 ```
 
 ## Make a histogram of the total number of steps taken each day
 
-```{r, echo=TRUE}
+Using ggplot to create an histogram for the total number of steps per day.
+
+```{r, echo=TRUE, eval=FALSE}
 
 ggplot(stepsperday, aes(x=date, y=total_steps_per_day))+
     geom_bar(stat="identity")+
@@ -57,10 +62,13 @@ ggplot(stepsperday, aes(x=date, y=total_steps_per_day))+
     ylab("Total steps")+
     ggtitle("Total steps per day")
 
-
 ```
 
+![alt text](figure/plot1.png)
+
 ## Calculate and report the mean and median of the total number of steps taken per day
+
+The calculation uses the summarize function.
 
 ```{r, echo=TRUE}
 
@@ -72,12 +80,17 @@ summarize(stepsperday,
 
 ## What is the average daily activity pattern?
 
+The data frame is grouped by interval. Then the function summarize returns the mean steps per interval.
+Ploting was done using ggplot.
+
 ```{r, echo=TRUE}
 
 by_interval <- group_by(dt, interval)
 stepsperinterval_mean <- summarize(by_interval, mean_steps_per_interval=mean(steps, na.rm=TRUE))
 
-png(file = "plot1.png", width = 480, height = 480)
+```
+
+```{r, echo=TRUE, eval=FALSE}
 
 ggplot(stepsperinterval_mean, aes(x=interval, y=mean_steps_per_interval))+
     geom_line()+
@@ -85,14 +98,11 @@ ggplot(stepsperinterval_mean, aes(x=interval, y=mean_steps_per_interval))+
     ylab("Total steps")+
     ggtitle("Mean steps per interval")
 
-dev.off()
-
 ```
 
-The 5-minutes interval which contains the maximum number of steps is .
-```{r}
-stepsperinterval_mean[which(stepsperinterval_mean$mean_steps_per_interval==max(stepsperinterval_mean$mean_steps_per_interval)), "interval"]
-```
+![alt text](figure/plot2.png)
+
+The 5-minutes interval which contains the maximum number of steps is `r stepsperinterval_mean[which(stepsperinterval_mean$mean_steps_per_interval==max(stepsperinterval_mean$mean_steps_per_interval)), "interval"]`
 
 ## Imputing missing values
 
@@ -108,7 +118,9 @@ md.pattern(dt)
 
 There are 2304 missing values in the steps variables.
 
-```{r, echo=TRUE}
+
+
+```{r, echo=FALSE}
 
 #Transformation of the "date"" variable into a numeric variable (number of weeks calculated from the starting date for each observation)
 dt$date<-as.numeric(difftime(time1 = dt$date, time2 = dt$date[1], units = "weeks"))
@@ -123,6 +135,9 @@ dt_withoutNA <- complete(temp, 1)
 
 by_day2 <- group_by(dt_withoutNA, date)
 stepsperday_withoutNA <- summarize(by_day2, total_steps_per_day2=sum(steps, na.rm = TRUE))
+```
+
+```{r, echo=FALSE, eval=FALSE}
 
 ggplot(stepsperday_withoutNA, aes(x=date, y=total_steps_per_day2))+
     geom_bar(stat="identity")+
@@ -130,6 +145,10 @@ ggplot(stepsperday_withoutNA, aes(x=date, y=total_steps_per_day2))+
     ylab("Total steps")+
     ggtitle("Total steps per day")
 
+```
+![alt text](figure/plot3.png)
+
+```{r, echo=TRUE}
 #reporting the mean and median total number of steps taken per day
 
 summarize(stepsperday_withoutNA, 
@@ -143,7 +162,7 @@ Imputing missing data increased the estimates of the total daily number of steps
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo=FALSE}
+```{r, echo=TRUE}
 
 #reload the data
 dt <- read.csv(file="activity.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -159,12 +178,12 @@ dt$date <- as.Date(dt$date)
 dt_withweekdaysfactor <- mutate(dt, weekfactor=(weekdays(dt$date)==c("samedi", "dimanche")))
 
 by_interval2 <- group_by(dt_withweekdaysfactor, interval, weekfactor)
-head(by_interval2)
-
-head(by_interval2)
 
 stepsperinterval_mean_withweekfactor <- summarize(by_interval2, mean_steps_per_interval2=mean(steps, na.rm=TRUE))
-head(stepsperinterval_mean_withweekfactor)
+```
+
+```{r, echo=TRUE, eval=FALSE}
+
 ggplot(stepsperinterval_mean_withweekfactor, aes(x=interval, y=mean_steps_per_interval2))+
     geom_line()+
     facet_wrap(~weekfactor, nrow=2, ncol=1)+
@@ -174,4 +193,4 @@ ggplot(stepsperinterval_mean_withweekfactor, aes(x=interval, y=mean_steps_per_in
 
 ```
 
-
+![alt text](figure/plot4.png)
