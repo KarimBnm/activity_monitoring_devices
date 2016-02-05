@@ -72,9 +72,9 @@ The calculation uses the summarize function.
 
 ```{r, echo=TRUE}
 
-summarize(stepsperday, 
+print(summarize(stepsperday, 
           mean_steps=round(mean(stepsperday$total_steps_per_day),0), 
-          median_steps=median(stepsperday$total_steps_per_day))
+          median_steps=median(stepsperday$total_steps_per_day)))
 
 ```
 
@@ -151,9 +151,9 @@ ggplot(stepsperday_withoutNA, aes(x=date, y=total_steps_per_day2))+
 ```{r, echo=TRUE}
 #reporting the mean and median total number of steps taken per day
 
-summarize(stepsperday_withoutNA, 
+print(summarize(stepsperday_withoutNA, 
           mean_steps_withoutNA=round(mean(stepsperday_withoutNA$total_steps_per_day2),0), 
-          median_steps_withoutNA=median(stepsperday_withoutNA$total_steps_per_day2))
+          median_steps_withoutNA=median(stepsperday_withoutNA$total_steps_per_day2)))
 
 ```
 
